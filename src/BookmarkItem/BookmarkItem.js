@@ -3,12 +3,13 @@ import Rating from '../Rating/Rating';
 import config from '../config';
 import './BookmarkItem.css';
 import BookmarksContext from '../BookmarksContext';
+import PropTypes from 'prop-types'; 
 
 function deleteBookmarkRequest(bookmarkId, callback) {
   fetch(config.API_ENDPOINT + `/${bookmarkId}`, {
     method: 'DELETE',
     headers: {
-      'authorization': 'bearer ${config.API_KEY}' 
+      'authorization': `bearer ${config.API_KEY}` 
     }
   })
   .then(res => {
@@ -29,6 +30,7 @@ function deleteBookmarkRequest(bookmarkId, callback) {
 }
 
 export default function BookmarkItem(props) {
+  console.log("url: ", props.url, "props: ", props)
   return (
     <BookmarksContext.Consumer>
       {(context) => (
@@ -51,6 +53,7 @@ export default function BookmarkItem(props) {
         <button
           className='BookmarkItem__description'
           onClick={() => {
+            console.log(props);
             deleteBookmarkRequest(
               props.id,
               context.deleteBookmark,
@@ -67,5 +70,14 @@ export default function BookmarkItem(props) {
 }
 
 BookmarkItem.defaultProps = {
+  rating: 1,
+  description: '',
+  title: '',
   onClickDelete: () => {},
 }
+
+BookmarkItem.propTypes = {
+  title: PropTypes.string.isRequired,
+  rating: PropTypes.number,
+  description: PropTypes.string
+};

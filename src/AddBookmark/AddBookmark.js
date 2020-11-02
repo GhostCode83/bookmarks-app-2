@@ -1,11 +1,10 @@
-import React, { Component } from  'react';
-import { withRouter } from 'react-router-dom';
+import React, { Component } from 'react';
 import config from '../config'
 import './AddBookmark.css';
 import BookmarksContext from '../BookmarksContext';
 
 const Required = () => (
-  <span className='AddBookmark__required'>*</span>
+  <span className='required'>*</span>
 )
 
 class AddBookmark extends Component {
@@ -26,6 +25,7 @@ class AddBookmark extends Component {
     }
     this.setState({ error: null })
     fetch(config.API_ENDPOINT, {
+      //http://localhost:8000
       method: 'POST',
       body: JSON.stringify(bookmark),
       headers: {
@@ -56,7 +56,7 @@ class AddBookmark extends Component {
       })
   }
 
-  handleClickCancel =() => {
+  handleClickCancel = () => {
     this.props.history.push('/')
   };
 
@@ -140,4 +140,4 @@ class AddBookmark extends Component {
   }
 }
 
-export default withRouter(AddBookmark);
+export default AddBookmark;

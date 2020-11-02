@@ -3,33 +3,11 @@ import { Route } from 'react-router-dom';
 import AddBookmark from './AddBookmark/AddBookmark';
 import BookmarkList from './BookmarkList/BookmarkList';
 import BookmarksContext from './BookmarksContext';
+import EditBookmark from './EditBookmarkForm/EditBookmarkForm'
 import Nav from './Nav/Nav';
 import config from './config';
 import './App.css';
-
-const bookmarks = [
-  // {
-  //   id: 0,
-  //   title: 'Google',
-  //   url: 'http://www.google.com',
-  //   rating: '3',
-  //   desc: 'Internet-related services and products.'
-  // },
-  // {
-  //   id: 1,
-  //   title: 'Thinkful',
-  //   url: 'http://www.thinkful.com',
-  //   rating: '5',
-  //   desc: '1-on-1 learning to accelerate your way to a new high-growth tech career!'
-  // },
-  // {
-  //   id: 2,
-  //   title: 'Github',
-  //   url: 'http://www.github.com',
-  //   rating: '4',
-  //   desc: 'brings together the world\'s largest community of developers.'
-  // }
-];
+import Rating from './Rating/Rating'
 
 class App extends Component {
   state = {
@@ -46,18 +24,20 @@ class App extends Component {
 
   addBookmark = bookmark => {
     this.setState({
-      bookmarks: [ ...this.state.bookmarks, bookmark ],
+      bookmarks: [...this.state.bookmarks, bookmark],
     })
   }
 
   deleteBookmark = bookmarkId => {
-    const newBookmarks = this.state.bookmarks.filter(bm => 
+    const newBookmarks = this.state.bookmarks.filter(bm =>
       bm.id !== bookmarkId
-      )
-      this.setState({
-        bookmarks: newBookmarks
-      })
+    )
+    this.setState({
+      bookmarks: newBookmarks
+    })
   }
+
+
   componentDidMount() {
     fetch(config.API_ENDPOINT, {
       method: 'GET',
@@ -68,7 +48,7 @@ class App extends Component {
     })
       .then(res => {
         if (!res.ok) {
-          throw new Error(res.status)
+          return res.json.then(error => Promise.reject(error))
         }
         return res.json()
       })
@@ -76,28 +56,41 @@ class App extends Component {
       .catch(error => this.setState({ error }))
   }
 
+  updateBookmark = updatedBookmark => {
+    this.setState({
+      bookmarks: this.state.bookmarks.map(bm =>
+        (bm.id !== updatedBookmark.id) ? bm : updatedBookmark)
+    })
+  };
+
   render() {
     const contextValue = {
       bookmarks: this.state.bookmarks,
       addBookmark: this.addBookmark,
       deleteBookmark: this.deleteBookmark,
+      updateBookmark: this.updateBookmark,
     }
 
     return (
       <main className='App'>
         <h1>Bookmarks!</h1>
+        <Rating value={5} />
         <BookmarksContext.Provider value={contextValue}>
           <Nav />
           <div className='content' aria-live='polite'>
-          <Route
-            path='/add-bookmark'
-            component={AddBookmark}
-          />
-          <Route
-            exact
-            path='/'
-            component={BookmarkList}
-          />
+            <Route
+              path='/add-bookmark'
+              component={AddBookmark}
+            />
+            <Route
+              exact
+              path='/'
+              component={BookmarkList}
+            />
+            <Route
+              path='/edit/:bookmarkId'
+              component={EditBookmark}
+            />
           </div>
         </BookmarksContext.Provider>
       </main>
